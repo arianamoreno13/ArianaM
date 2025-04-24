@@ -15,7 +15,11 @@ def main():
         print("Usage: ./avg5.py num1 num2 num3 num4 num5")
         print("All inputs must be positive numbers.")
         sys.exit(1)
-    
+    try:
+        numbers = [float(arg) for arg in sys.argv[1:]]
+        if not all(n > 0 for n in numbers):
+            raise ValueError("All numbers must be positive.")
+
 
 # Run main() if script called directly, else use as a library to be imported
 if __name__ == '__main__':

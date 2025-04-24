@@ -5,17 +5,17 @@
 
 # Set up initial variables and imports
 import sys
-import os 
-import logging
-import datetime
-import random
+
 # Script/Library Functions
+def calculate_average(numbers):
+    """Cal the avg of a list of #s to two decimal places."""
+
 def main():
-    """Main function/entry point for the script."""
-
-def function1(message):
-    """Function that processes a given message"""
-
+    if len(sys.argv) != 6:
+        print("Usage: ./avg5.py num1 num2 num3 num4 num5")
+        print("All inputs must be positive numbers.")
+        sys.exit(1)
+    
 
 # Run main() if script called directly, else use as a library to be imported
 if __name__ == '__main__':

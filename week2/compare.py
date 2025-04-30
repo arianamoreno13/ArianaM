@@ -15,12 +15,15 @@ def main():
         
         if valid(var):
             var_int = int(var)
-            if var < NUMBER10:
-            print(var + ' is larger than 10')
-            elif var > NUMBER10:
-                print(var + ' is less than 10')
+            if var_int > NUMBER10:
+            	print(f'{var_int} is larger than 10')
+            elif var_int < NUMBER10:
+            	print(f'{var_int} is less than 10')
             else:
-                print var + ' equals 10'
+            	print(f'{var_int} equals 10')
+	else:
+		usage()
+
         all_done = input('Enter Y if all done, anything else to continue? ')
         if all_done == 'Y':
             break
@@ -28,14 +31,13 @@ def main():
 def valid(x):
     try:
         var_int = int(x)
-        return 0
-    except ValueError:
-        usage()
         return 1
+    except ValueError:
+        return 0
 
 def usage():
     print(" ")
-    print( You must enter an integer at the prompt )
+    print("You must enter an integer at the prompt")
     sys.exit()
 
 # Run main() if script called directly, else use as library to be imported

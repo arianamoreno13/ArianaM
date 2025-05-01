@@ -1,43 +1,22 @@
 #!/usr/bin/python3
-# Script to compare a number to 10.
-# Licensed under the MIT License (https://opensource.org/license/mit)
-# Ski-20250206: initial version
-
-# Initial variables and imports
-import sys
-NUMBER10 = 10
-
-# Script/Library Functions
-def main():
-    """ Get input and compare a number to 10"""
-    while True:
-        var = input('Enter a number: ')
-        
-        if valid(var):
-            var_int = int(var)
-            if var < NUMBER10:
-            print(var + ' is larger than 10')
-            elif var > NUMBER10:
-                print(var + ' is less than 10')
-            else:
-                print var + ' equals 10'
-        all_done = input('Enter Y if all done, anything else to continue? ')
-        if all_done == 'Y':
-            break
-
-def valid(x):
-    try:
-        var_int = int(x)
-        return 0
-    except ValueError:
-        usage()
-        return 1
-
-def usage():
-    print(" ")
-    print( You must enter an integer at the prompt )
-    sys.exit()
-
-# Run main() if script called directly, else use as library to be imported
-if __name__ == '__main__':
-    main()
+results = {'152.157.64.5': {'osmatch': {}, 'ports': [{'protocol': 'tcp', 'portid':
+'22', 'state': 'open', 'reason': 'syn-ack', 'reason_ttl': '49', 'service': {'name':
+'ssh', 'method': 'table', 'conf': '3'}, 'cpe': [], 'scripts': []}, {'protocol':
+'tcp', 'portid': '80', 'state': 'open', 'reason': 'syn-ack', 'reason_ttl': '49',
+'service': {'name': 'http', 'method': 'table', 'conf': '3'}, 'cpe': [], 'scripts':
+[]}, {'protocol': 'tcp', 'portid': '113', 'state': 'closed', 'reason': 'reset',
+'reason_ttl': '51', 'service': {'name': 'ident', 'method': 'table', 'conf': '3'},
+'cpe': [], 'scripts': []}, {'protocol': 'tcp', 'portid': '443', 'state': 'open',
+'reason': 'syn-ack', 'reason_ttl': '49', 'service': {'name': 'https', 'method':
+'table', 'conf': '3'}, 'cpe': [], 'scripts': []}], 'hostname': [], 'macaddress':
+None, 'state': {'state': 'up', 'reason': 'syn-ack', 'reason_ttl': '49'}},
+'runtime': {'time': '1680459977', 'timestr': 'Sun Apr 2 11:26:17 2023', 'elapsed':
+'15.08', 'summary': 'Nmap done at Sun Apr 2 11:26:17 2023; 1 IP address (1 host
+up) scanned in 15.08 seconds', 'exit': 'success'}, 'stats': {'scanner': 'nmap',
+'args': '/usr/bin/nmap -v -oX - -sS 152.157.64.5', 'start': '1680459961',
+'startstr': 'Sun Apr 2 11:26:01 2023', 'version': '7.80', 'xmloutputversion':
+'1.04'}, 'task_results': [{'task': 'Ping Scan', 'time': '1680459962', 'extrainfo':
+'1 total hosts'}, {'task': 'Parallel DNS resolution of 1 host.', 'time':
+'1680459972'}, {'task': 'SYN Stealth Scan', 'time': '1680459976', 'extrainfo':
+'1000 total ports'}]}
+print(results)

@@ -1,0 +1,4 @@
+Step 7: 22
+Step 8: 80
+Step 10: 113
+Step 15: 443

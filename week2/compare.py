@@ -21,8 +21,7 @@ def main():
             	print(f'{var_int} is less than 10')
             else:
             	print(f'{var_int} equals 10')
-	else:
-		usage()
+
 
         all_done = input('Enter Y if all done, anything else to continue? ')
         if all_done == 'Y':

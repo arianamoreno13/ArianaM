@@ -9,7 +9,7 @@ import sys
 # Script/Library Functions
 def calculate_average(numbers):
     """Cal the avg of a list of #s to two decimal places."""
-
+    return round(sum(numbers) / len(numbers), 2)
 def main():
     if len(sys.argv) != 6:
         print("Usage: ./avg5.py num1 num2 num3 num4 num5")

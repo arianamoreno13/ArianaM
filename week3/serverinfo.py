@@ -1,10 +1,25 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+# Script returns information about the machine.
+# Licensed under the MIT License (https://opensource.org/license/mit)
+# ARI-20130930
 import subprocess
 import psutil
 import socket
 import uuid
 import distro
 import shutil
+import platform
+
+def main():
+    print(f"Hostname: {get_hostname()}")
+    print(f"CPU (count): {get_cpu_count()}")
+    print(f"RAM (GB): {get_ram_gb()}")
+    print(f"OSType: {get_os_type()}")
+    print(f"OSVersion: {get_os_version()}")
+    print(f"OS disk size (GB): {get_disk_size_gb()}")
+    print(f"OS disk free (GB): {get_disk_free_gb()}")
+    print(f"Primary IP: {get_primary_ip()}")
+    print(f"Primary Mac: {get_primary_mac()}")
 
 def get_hostname():
     return socket.gethostname()
@@ -35,17 +50,6 @@ def get_primary_ip():
 def get_primary_mac():
     mac_num = hex(uuid.getnode()).replace('0x', '').zfill(12)
     return ':'.join(mac_num[i:i+2] for i in range(0, 12, 2))
-
-def main():
-    print(f"Hostname: {get_hostname()}")
-    print(f"CPU (count): {get_cpu_count()}")
-    print(f"RAM (GB): {get_ram_gb()}")
-    print(f"OSType: {get_os_type()}")
-    print(f"OSVersion: {get_os_version()}")
-    print(f"OS disk size (GB): {get_disk_size_gb()}")
-    print(f"OS disk free (GB): {get_disk_free_gb()}")
-    print(f"Primary IP: {get_primary_ip()}")
-    print(f"Primary Mac: {get_primary_mac()}")
 
 if __name__ == "__main__":
     main()

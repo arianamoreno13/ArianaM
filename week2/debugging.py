@@ -62,13 +62,13 @@ def section5():
 def section6():
     print('### Section 6')
     print("### Should print 'Ports scanned: 1000 total ports'")
-    print('Ports scanned: ' + RESULTS['stats']['scanner'])
+    print('Ports scanned: ' + RESULTS['task_results'][2]['extrainfo'])
 
 
 def section7():
     print('### Section 7')
     print("### Should print 'Elapsed time: 15.08'")
-    print('Elapsed time: ' + RESULTS['task_results'][0]['task'])
+    print('Elapsed time: ' + RESULTS['runtime']['elapsed'])
 
 def section8():
     print('### Section 8')
@@ -77,8 +77,8 @@ def section8():
     print('### Service http on port 80')
     print('### Service https on port 443')
     for ports in RESULTS['152.157.64.5']['ports']:
-        print('Service ' + ports['service'] + ' on port ' + ports['portid'])
-
+        if ports['state'] == 'open':
+            print("Service "+ports['service']['name']+" on port "+ports['portid'])
 
 # Run main() if script called directly
 if __name__ == "__main__":

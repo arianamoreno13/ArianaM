@@ -4,45 +4,49 @@ import sys
 import csv
 import pinglib
 
-def is_file(path):
-    return os.path.isfile(path)
+def ping_target(target):
+    result = pinglib.pingthis(target)
+    print(f"{result[0]},{result[1]}")
+    return result
 
-def ping_targets(input_target):
+def ping_from_file(filename):
     results = []
-    if is_file(input_target):
-        with open(input_target, 'r') as file:
-            for line in file:
-                ip_or_domain = line.strip()
-                result = pinglib.pingthis(ip_or_domain)
+    if not os.path.isfile(filename):
+        print(f"Error: File '{filename}' not found.")
+        sys.exit(1)
+
+    with open(filename, 'r') as file:
+        for line in file:
+            target = line.strip()
+            if target:
+                result = ping_target(target)
                 results.append(result)
-    else:
-        result = pinglib.pingthis(input_target)
-        results.append(result)
     return results
 
-def write_to_csv(results, output_filename):
-    with open(output_filename, 'w', newline='') as csvfile:
+def write_csv(results, output_file):
+    with open(output_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["IP", "TimeToPing (ms)"])
-        for result in results:
-            writer.writerow(result)
+        writer.writerows(results)
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: pingcsv.py <filename | IP | Domainname> [output_filename]")
+        print("Usage: pingcsv.py <filename | IP | Domainname> [output_filename.csv]")
         sys.exit(1)
 
-    input_target = sys.argv[1]
-    output_filename = sys.argv[2] if len(sys.argv) == 3 else None
-
-    results = ping_targets(input_target)
+    input_arg = sys.argv[1]
+    output_file = sys.argv[2] if len(sys.argv) == 3 else None
 
     print("IP, TimeToPing (ms)")
-    for result in results:
-        print(f"{result[0]},{result[1]}")
 
-    if output_filename:
-        write_to_csv(results, output_filename)
+    # Determine if input_arg is a file or a single IP/Domain
+    if os.path.isfile(input_arg):
+        results = ping_from_file(input_arg)
+    else:
+        results = [ping_target(input_arg)]
+
+    if output_file:
+        write_csv(results, output_file)
 
 if __name__ == "__main__":
     main()

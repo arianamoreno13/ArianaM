@@ -3,28 +3,38 @@ import os
 import sys
 import pinglib
 
-def is_file(path):
-    return os.path.isfile(path)
+def ping_from_file(filename):
+    try:
+        with open(filename, 'r') as file:
+            lines = file.read().splitlines()
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        sys.exit(1)
 
-def process_input(target):
     print("IP, TimeToPing (ms)")
-    if is_file(target):
-        with open(target, 'r') as file:
-            for line in file:
-                ip_or_domain = line.strip()
-                result = pinglib.pingthis(ip_or_domain)
-                print(f"{result[0]},{result[1]}")
-    else:
-        result = pinglib.pingthis(target)
-        print(f"{result[0]},{result[1]}")
+    for line in lines:
+        line = line.strip()
+        if line:
+            result = ping(line)
+            print(f"{line}, {result}")
+
+def ping_single_target(target):
+    print("IP, TimeToPing (ms)")
+    result = ping(target)
+    print(f"{target}, {result}")
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: pingany.py <filename | IP | Domainname>")
+        print("Usage: python pingany.py <filename | IP | Domainname>")
         sys.exit(1)
 
-    input_target = sys.argv[1]
-    process_input(input_target)
+    arg = sys.argv[1]
+
+    if os.path.isfile(arg):
+        ping_from_file(arg)
+    else:
+        ping_single_target(arg)
 
 if __name__ == "__main__":
     main()
+

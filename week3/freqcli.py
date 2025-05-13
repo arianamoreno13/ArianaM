@@ -8,45 +8,39 @@ import sys
 import string
 
 def is_vowel(char):
-    return char in 'aeiou'
+    return char in "aeiou"
 
 def count_letters(filename):
-    counts = {}
-
     try:
         with open(filename, 'r') as file:
             text = file.read().lower()
-            for char in text:
-                if char in string.ascii_lowercase:
-                    if char in counts:
-                        counts[char] += 1
-                    else:
-                        counts[char] = 1
     except FileNotFoundError:
         print(f"Error: File '{filename}' not found.")
         sys.exit(1)
 
-    return counts
+    letter_counts = {}
 
-def print_results(counts):
-    vowels = {k: v for k, v in counts.items() if is_vowel(k)}
-    consonants = {k: v for k, v in counts.items() if not is_vowel(k)}
+    for char in text:
+        if char in string.ascii_lowercase:
+            if char in letter_counts:
+                letter_counts[char] += 1
+            else:
+                letter_counts[char] = 1
 
-    for k in sorted(vowels):
-        print(f"{k} - {vowels[k]}")
-    for k in sorted(consonants):
-        print(f"{k} - {consonants[k]}")
+    return letter_counts
+
+def print_counts(counts):
+    for letter in sorted(counts.keys()):
+        print(f"{letter} - {counts[letter]}")
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python3 frequency.py <filename>")
+        print("Usage: python freqcli.py <filename>")
         sys.exit(1)
 
     filename = sys.argv[1]
-    counts = count_letters(filename)
-    print_results(counts)
+    letter_counts = count_letters(filename)
+    print_counts(letter_counts)
 
 if __name__ == "__main__":
     main()
-
-

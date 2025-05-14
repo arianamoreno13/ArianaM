@@ -1,28 +1,32 @@
 #!/usr/bin/env python3
 
+import sys
 import subprocess
 import re
-import sys
 
 def pingthis(ipordns):
     try:
+        # Run ping command (1 packet, quiet output)
         result = subprocess.run(
-            ["ping", "-n", "1", "-w", "1000", ipordns],  # Windows syntax
+            ['ping', '-c', '1', ipordns],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
         )
 
+        # If ping failed (host not found, etc.)
         if result.returncode != 0:
             return [ipordns, 'NotFound']
 
-        # Use regex to find "time=XXms" or "time<1ms"
-        match = re.search(r'time[=<]\s*(\d+)', result.stdout.lower())
+        # Search for the time=XX ms part in the output
+        match = re.search(r'time[=<](\d+\.?\d*)\s*ms', result.stdout)
         if match:
-            return [ipordns, f"{match.group(1)}"]
+            time_ms = round(float(match.group(1)), 2)
+            return [ipordns, str(time_ms)]
         else:
             return [ipordns, 'NotFound']
-    except Exception:
+
+    except Exception as e:
         return [ipordns, 'NotFound']
 
 def main():
@@ -30,9 +34,8 @@ def main():
         print("Usage: pinglib.py <IP | Domainname>")
         sys.exit(1)
 
-    target = sys.argv[1]
-    result = pingthis(target)
-
+    ipordns = sys.argv[1]
+    result = pingthis(ipordns)
     print("IP, TimeToPing(ms)")
     print(f"{result[0]},{result[1]}")
 

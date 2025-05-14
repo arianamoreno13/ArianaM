@@ -1,52 +1,55 @@
 #!/usr/bin/env python3
-import os
+
 import sys
+import os
 import csv
 import pinglib
 
-def ping_target(target):
-    result = pinglib.pingthis(target)
-    print(f"{result[0]},{result[1]}")
-    return result
-
-def ping_from_file(filename):
-    results = []
-    if not os.path.isfile(filename):
-        print(f"Error: File '{filename}' not found.")
-        sys.exit(1)
-
-    with open(filename, 'r') as file:
-        for line in file:
-            target = line.strip()
-            if target:
-                result = ping_target(target)
-                results.append(result)
-    return results
-
-def write_csv(results, output_file):
-    with open(output_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["IP", "TimeToPing (ms)"])
-        writer.writerows(results)
-
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: pingcsv.py <filename | IP | Domainname> [output_filename.csv]")
-        sys.exit(1)
+def main():                                                                     if len(sys.argv) < 2 or len(sys.argv) > 3:                                      print("Usage: pingcsv.py <filename | IP | Domainname> [output_filen>        sys.exit(1)
 
     input_arg = sys.argv[1]
-    output_file = sys.argv[2] if len(sys.argv) == 3 else None
+    output_filename = sys.argv[2] if len(sys.argv) == 3 else None
 
-    print("IP, TimeToPing (ms)")
-
-    # Determine if input_arg is a file or a single IP/Domain
+    # Determine if input is file or single IP/domain
     if os.path.isfile(input_arg):
-        results = ping_from_file(input_arg)
+        results = ping_file(input_arg)
     else:
-        results = [ping_target(input_arg)]
+        results = ping_single(input_arg)
 
-    if output_file:
-        write_csv(results, output_file)
+    # If output filename provided, write to CSV
+    if output_filename:
+        write_csv(results, output_filename)
+
+def ping_single(ip_or_domain):
+    result = pinglib.pingthis(ip_or_domain)
+    print("IP, TimeToPing (ms)")
+    print(f"{result[0]}, {result[1]}")
+    return [result]
+
+def ping_file(filename):
+    results = []
+    try:
+        with open(filename, 'r') as f:
+            print("IP, TimeToPing (ms)")
+            for line in f:
+                ip_or_domain = line.strip()
+                if ip_or_domain:
+                    result = pinglib.pingthis(ip_or_domain)
+                    print(f"{result[0]}, {result[1]}")
+                    results.append(result)
+    except Exception as e:
+        print(f"Error reading file: {e}")
+    return results
+
+def write_csv(results, output_filename):
+    try:
+        with open(output_filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["IP", "TimeToPing (ms)"])
+            writer.writerows(results)
+        print(f"\nResults written to {output_filename}")
+    except Exception as e:
+        print(f"Error writing CSV: {e}")
 
 if __name__ == "__main__":
     main()

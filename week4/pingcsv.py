@@ -5,7 +5,10 @@ import os
 import csv
 import pinglib
 
-def main():                                                                     if len(sys.argv) < 2 or len(sys.argv) > 3:                                      print("Usage: pingcsv.py <filename | IP | Domainname> [output_filen>        sys.exit(1)
+def main():
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: pingcsv.py <filename | IP | Domainname> [output_filename]")
+        sys.exit(1)
 
     input_arg = sys.argv[1]
     output_filename = sys.argv[2] if len(sys.argv) == 3 else None

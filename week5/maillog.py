@@ -15,9 +15,8 @@ def main():
     print("servers.csv has been created.")
 
 def extract_servers(filename):
-# Regex pattern to find server names and IP addresses
-    pattern = re.compile(r'(\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b).*?(\b\d{1,3}(?:\.\d{1,3}){3}\b)')
-# Use a set to ensure No duplicates
+    # Match lines that indicate an actual connection
+    pattern = re.compile(r'connect from\s+([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\[(\d{1,3}(?:\.\d{1,3}){3})\]')
     found = set()
 
     try:
@@ -31,7 +30,7 @@ def extract_servers(filename):
     except FileNotFoundError:
         print(f"Error: File '{filename}' not found.")
         sys.exit(1)
-# Sort for consistency
+
     return sorted(found)
 
 def write_csv(servers):

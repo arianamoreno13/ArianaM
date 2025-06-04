@@ -1,0 +1,120 @@
+sqlite> .dbconfig
+          defensive on
+            dqs_ddl on
+            dqs_dml on
+        enable_fkey off
+        enable_qpsg off
+     enable_trigger on
+        enable_view on
+     fts3_tokenizer on
+ legacy_alter_table off
+ legacy_file_format off
+     load_extension on
+   no_ckpt_on_close off
+     reset_database off
+  reverse_scanorder off
+    stmt_scanstatus off
+        trigger_eqp off
+     trusted_schema off
+    writable_schema off
+
+sqlite> .tables
+devices0  devices1  devices2
+
+
+sqlite> .schema
+CREATE TABLE devices0
+(name, macaddress, ip, cpucount, disks, diskfree, ram, ostype, osversion);
+CREATE TABLE devices1 (
+ name text not null,
+    macaddress text not null,
+    ip text,
+    cpucount int,
+    disks int,
+    diskfree int,
+    ram int,
+    ostype text,
+    osversion text
+);
+CREATE TABLE IF NOT EXISTS "devices2"(
+"SQLite format 3" TEXT);
+sqlite> select * from devices2;
+" name text not null"
+"    macaddress text not null"
+"    ip text"
+"    cpucount int"
+"    disks int"
+"    diskfree int"
+"    ram int"
+"    ostype text"
+"    osversion text"
+")|�Ktabledevices0devices0CREATE TABLE devices0"
+(name
+sqlite> select * from devices0;
+"SQLite format 3",,,,,,,,
+"SQLite format 3"" TEXT)�Z�tabledevices1devices1CREATE TABLE devices1 (
+ name text not null,
+    macaddress text not null,
+    ip text,
+    cpucount int,
+    disks int,
+    diskfree int,
+    ram int,
+    ostype text,
+    osversion text
+)|�Ktabledevices0devices0CREATE TABLE devices0
+",,,,,,,,caddress, ip, cpucount, disks, diskfree, ram, ostype, osversion)
+sqlite> select * from devices2;
+" name text not null"
+"    macaddress text not null"
+"    ip text"
+"    cpucount int"
+"    disks int"
+"    diskfree int"
+"    ram int"
+"    ostype text"
+"    osversion text"
+")|�Ktabledevices0devices0CREATE TABLE devices0"
+(name
+sqlite>
+
+sqlite> select * from devices1;
+hostname,macaddress,ip,cpucount,disksize,diskfree,ram,ostype,osversion
+yoda,c8:f6:50:e7:93:ff,192.168.10.21,1,10,8,4,ubuntu,12.04
+neytiri,30:85:a9:57:a9:1d,192.168.10.10,4,250,125,16,windows,2012
+hal,2c:44:fd:02:02:3b,192.168.10.22,1,80,20,2,windows,7
+thufir,5c:96:9d:90:10:b9,192.168.10.11,4,500,50,4,centos,6
+leeloo,00:10:49:1c:25:7f,192.168.10.23,1,500,300,4,windows,7
+sqlite>
+
+
+ubuntu@ip-172-31-31-120:~/git/ArianaM/week7$ python3
+Python 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sqlite3
+>>> db = sqlite3.connect('test.db')
+>>> cur = db.cursor()
+>>> result = cur.execute("select * from devices0;")
+>>> result.fetchall()
+[('hostname', 'macaddress', 'ip', 'cpucount', 'disksize', 'diskfree', 'ram', 'ostype', 'osversion'), ('yoda', 'c8:f6:50:e7:93:ff', '192.168.10.21', '1', '10', '8', '4', 'ubuntu', '12.04'), ('neytiri', '30:85:a9:57:a9:1d', '192.168.10.10', '4', '250', '125', '16', 'windows', '2012'), ('hal', '2c:44:fd:02:02:3b', '192.168.10.22', '1', '80', '20', '2', 'windows', '7'), ('thufir', '5c:96:9d:90:10:b9', '192.168.10.11', '4', '500', '50', '4', 'centos', '6'), ('leeloo', '00:10:49:1c:25:7f', '192.168.10.23', '1', '500', '300', '4', 'windows', '7')]
+
+ubuntu@ip-172-31-31-120:~/git/ArianaM/week7$ strings etest.db | head -n 5
+0#z{
+zE9h2
+NMb-
++6LQ
+`#s`n
+
+ubuntu@ip-172-31-31-120:~/git/ArianaM/week7$ python3
+Python 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sqlcipher3
+>>> db = sqlcipher3.connect('etest.db')
+>>> cur = db.cursor()
+>>> result = cur.execute('pragma key="mysecret123";')
+>>> result.fetchone()
+('ok',)
+>>> result = cur.execute("select * from devices;")
+>>> result.fetchall()
+[('yoda', 'c8:f6:50:e7:93:ff', '192.168.10.21', '1', '10', '8', '4', 'ubuntu', '12.04'), ('neytiri', '30:85:a9:57:a9:1d', '192.168.10.10', '4', '250', '125', '16', 'windows', '2012'), ('hal', '2c:44:fd:02:02:3b', '192.168.10.22', '1', '80', '20', '2', 'windows', '7'), ('thufir', '5c:96:9d:90:10:b9', '192.168.10.11', '4', '500', '50', '4', 'centos', '6'), ('leeloo', '00:10:49:1c:25:7f', '192.168.10.23', '1', '500', '300', '4', 'windows', '7')]
+>>>

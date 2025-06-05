@@ -1,0 +1,80 @@
+sqlite> .dbconfig
+          defensive on
+            dqs_ddl on
+            dqs_dml on
+        enable_fkey off
+        enable_qpsg off
+     enable_trigger on
+        enable_view on
+     fts3_tokenizer on
+ legacy_alter_table off
+ legacy_file_format off
+     load_extension on
+   no_ckpt_on_close off
+     reset_database off
+  reverse_scanorder off
+    stmt_scanstatus off
+        trigger_eqp off
+     trusted_schema off
+    writable_schema off
+
+sqlite> .tables
+devices0  devices1  devices2
+
+
+sqlite> .schema
+CREATE TABLE devices0
+(name, macaddress, ip, cpucount, disks, diskfree, ram, ostype, osversion);
+CREATE TABLE devices1 (
+ name text not null,
+    macaddress text not null,
+    ip text,
+    cpucount int,
+    disks int,
+    diskfree int,
+    ram int,
+    ostype text,
+    osversion text
+);
+CREATE TABLE IF NOT EXISTS "devices2"(
+"SQLite format 3" TEXT);
+sqlite> select * from devices2;
+" name text not null"
+"    macaddress text not null"
+"    ip text"
+"    cpucount int"
+"    disks int"
+"    diskfree int"
+"    ram int"
+"    ostype text"
+"    osversion text"
+")|�Ktabledevices0devices0CREATE TABLE devices0"
+(name
+sqlite> select * from devices0;
+"SQLite format 3",,,,,,,,
+"SQLite format 3"" TEXT)�Z�tabledevices1devices1CREATE TABLE devices1 (
+ name text not null,
+    macaddress text not null,
+    ip text,
+    cpucount int,
+    disks int,
+    diskfree int,
+    ram int,
+    ostype text,
+    osversion text
+)|�Ktabledevices0devices0CREATE TABLE devices0
+",,,,,,,,caddress, ip, cpucount, disks, diskfree, ram, ostype, osversion)
+sqlite> select * from devices2;
+" name text not null"
+"    macaddress text not null"
+"    ip text"
+"    cpucount int"
+"    disks int"
+"    diskfree int"
+"    ram int"
+"    ostype text"
+"    osversion text"
+")|�Ktabledevices0devices0CREATE TABLE devices0"
+(name
+sqlite>
+

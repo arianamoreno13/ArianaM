@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import sys
 import csv
-from nmap import PortScanner
-from nmap.nmap import NmapScanTechniques
+import nmap3
+#from nmap import PortScanner
+#from nmap.nmap import NmapScanTechniques
 
 def main():
     if len(sys.argv) != 3:
@@ -13,7 +14,7 @@ def main():
     outputfile = sys.argv[2]
 
     try:
-        scanner = NmapScanTechniques()
+        scanner = nmap3.NmapScanTechniques()
         print(f"Scanning subnet {subnet} with SYN scan. This may take a few minutes...")
 
         result = scanner.nmap_syn_scan(subnet)

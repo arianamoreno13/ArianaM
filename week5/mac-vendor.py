@@ -1,3 +1,4 @@
+mac-vendor.py                             
 #!/usr/bin/env python3
 import sys
 import re
@@ -25,11 +26,9 @@ with open("mac-vendor.csv", 'w', newline='') as csvfile:
     writer.writerow(['IP', 'Mac Address', 'Vendor'])
     for ip, mac in ip_mac_map.items():
         try:
-            resp = requests.get(f"https://api.macvendors.com/{mac}", timeout=5)
-            vendor = resp.text.strip()
+            resp = requests.get(f"https://api.macvendors.com/{mac}", timeou>            vendor = resp.text.strip()
             if vendor.startswith("{"):
                 vendor = "Unknown"
         except:
             vendor = "Unknown"
         writer.writerow([ip, mac, vendor])
-

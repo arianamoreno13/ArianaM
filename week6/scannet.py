@@ -19,7 +19,7 @@ def main():
 
         result = scanner.nmap_syn_scan(subnet)
 
-        if not result or 'scan' not in result:
+        if not result:
             print("No scan results found.")
             sys.exit(1)
 
@@ -27,13 +27,13 @@ def main():
             writer = csv.writer(csvfile)
             writer.writerow(["IP", "Open Ports"])
 
-            for ip, data in result['scan'].items():
+            for ip, data in result.items():
                 open_ports = []
 
-                if 'tcp' in data:
-                    for port, port_data in data['tcp'].items():
+                if data['state']['state']=='up':
+                    for port_data in data['ports']:
                         if port_data['state'] == 'open':
-                            open_ports.append(str(port))
+                            open_ports.append(str(port_data['portid']))
 
                 if open_ports:
                     writer.writerow([ip, ' '.join(open_ports)])

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import csv
-import nmap
+import nmap3
 
 def main():
     if len(sys.argv) != 3:

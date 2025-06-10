@@ -31,9 +31,9 @@ def main():
 
                 # Skip IPv6 addresses and entries without valid hostname
                 if hostname and addresses:
-                    ipv4_addresses = [addr for addr in addresses if ":" not in addr]
-                    for ip in ipv4_addresses:
-                        writer.writerow([hostname, ip])
+                    #ipv4_addresses = [addr for addr in addresses if ":" not in addr]
+                    #for ip in ipv4_addresses:
+                    writer.writerow([hostname, addresses])
 
         print(f"Scan complete. Results saved to {outputfile}")
 

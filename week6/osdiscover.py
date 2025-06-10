@@ -11,6 +11,8 @@ def main():
     input_file = sys.argv[1]
     output_file = sys.argv[2]
 
+    nmap = nmap3.Nmap()
+    
     try:
         with open(input_file, newline='') as infile, open(output_file, mode='w', newline='') as outfile:
             reader = csv.reader(infile)
@@ -22,7 +24,7 @@ def main():
             for row in reader:
                 ip = row[0]
                 ports = row[1] if len(row) > 1 else ''
-                os_name = detect_os(ip)
+                os_name = detect_os(nmap, ip)
                 writer.writerow([ip, ports, os_name])
                 print(f"Scanned {ip}: OS = {os_name}")
 
@@ -31,14 +33,12 @@ def main():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def detect_os(ip):
-    scanner = nmap.PortScanner()
+def detect_os(nmap, ip):
     try:
-        scanner.scan(ip, arguments='-O')
-        if 'osmatch' in scanner[ip]:
-            os_matches = scanner[ip]['osmatch']
-            if os_matches:
-                return os_matches[0]['name']
+        result = nmap.nmap_os_detection(ip)
+        os_matches = result.get(ip, {}).get("osmatch", [])
+        if os_matches:
+            return os_matches[0].get("name", "Unknown")
         return "Unknown"
     except Exception as e:
         return f"Error: {e}"

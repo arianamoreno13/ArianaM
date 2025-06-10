@@ -9,6 +9,8 @@ import uuid
 import distro
 import shutil
 import platform
+import time
+from datetime import timedelta
 
 def main():
     print(f"Hostname: {get_hostname()}")
@@ -50,6 +52,23 @@ def get_primary_ip():
 def get_primary_mac():
     mac_num = hex(uuid.getnode()).replace('0x', '').zfill(12)
     return ':'.join(mac_num[i:i+2] for i in range(0, 12, 2))
+
+
+def get_name():
+    return get_hostname()
+
+def get_os():
+    return f"{get_os_type()} {get_os_version()}"
+
+def get_uptime():
+    uptime_seconds = time.time() - psutil.boot_time()
+    return str(timedelta(seconds=int(uptime_seconds)))
+
+def get_cpu():
+    return str(get_cpu_count()) + " CPUs"
+
+def get_memory():
+    return str(get_ram_gb()) + " GB"
 
 if __name__ == "__main__":
     main()

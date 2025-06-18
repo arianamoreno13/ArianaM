@@ -1,0 +1,37 @@
+1. Print the OS of each host
+    ansible all -i inventory -m gather_facts | grep -i ansible_os_family
+
+2. Print the distribution version of each host?
+    ansible all -i inventory -m gather_facts | grep -i ansible_distribution_version
+
+3. Print the fqdn_ip4 address of each host?
+    ansible all -i inventory -m gather_facts | grep -i ansible_fqdn
+    ansible all -i inventory -m gather_facts | grep -i ansible_all_ipv4_addresses
+
+4. Print the shell of each host?
+    ansible all -i inventory -m gather_facts | grep -i ansible_env.SHELL
+
+5. Run 'ls -l' on the root partition of the linux hosts only?
+    ansible all -i inventory -a "ls -l /"
+
+6. Print the disk usage of each host?
+    ansible all -i inventory -a "df -h"
+
+7. Print the task list for the windows host?
+    ansible windows -i inventory -a "tasklist" -m win_command
+
+8. Create the directory TEST in the root directory of the linux (/) and windows (C:\) hosts?
+    ansible all -i inventory -a "mkdir /TEST"
+    ansible windows -i inventory -m win_file -a "path='C:\\TEST' state=directory"
+
+9. Copy the /home/ubuntu/testfile.txt file to the TEST directory on windows and linux hosts?
+    ansible all -i inventory -m copy -a "src=/home/ubuntu/testfile.txt dest=/TEST/"
+    ansible windows -i inventory -m win_copy -a "src=/home/ubuntu/testfile.txt dest=C:\\TEST\\"
+
+10. Print out the contents of the TEST directory on each host?
+    ansible all -i inventory -a "ls -l /TEST"
+    ansible windows -i inventory -m win_command -a "dir C:\\TEST"
+
+11. Print out the TEST directory owner on each host?
+    ansible all -i inventory -a "ls -ld /TEST"
+    ansible windows -i inventory -m win_command -a "dir /Q C:\\TEST"

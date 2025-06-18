@@ -1,0 +1,14 @@
+---
+- name: Ping Linux machines
+  hosts: linux
+  gather_facts: no
+  tasks:
+    - name: Ping Linux Host
+      ansible.builtin.ping:
+
+- name: Ping Windows machines
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Ping Windows Host
+      ansible.windows.win_ping:

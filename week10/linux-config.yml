@@ -1,0 +1,58 @@
+---
+- name: Basic Linux server configuration
+  hosts: linux1,linux2
+  become: yes
+
+  tasks:
+    - name: Install required packages
+      package:
+        name:
+          - python3
+          - sysstat
+          - chrony
+          - vim
+          - git
+        state: present
+
+    - name: Copy system-wide vimrc file (Ubuntu or RedHat)
+      copy:
+        src: vimrc
+        dest: "{{ '/etc/vim/vimrc' if 'linux1' in inventory_hostname else '/etc/vimrc' }}"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Set timezone to America/Los_Angeles
+      timezone:
+        name: America/Los_Angeles
+
+    - name: Add localadmin user
+      user:
+        name: localadmin
+        groups: "{{ 'sudo' if 'linux1' in inventory_hostname else 'wheel' }}"
+        append: yes
+        state: present
+        create_home: yes
+
+    - name: Ensure .ssh directory exists
+      file:
+        path: /home/localadmin/.ssh
+        state: directory
+        owner: localadmin
+        group: localadmin
+        mode: '0700'
+
+    - name: Generate SSH key pair for localadmin
+      become_user: localadmin
+      openssh_keypair:
+        path: /home/localadmin/.ssh/id_rsa
+        size: 2048
+        type: rsa
+        mode: '0600'
+      when: not lookup('file', '/home/localadmin/.ssh/id_rsa', errors='ignore')
+
+    - name: Update all installed packages
+      package:
+        name: '*'
+        state: latest
+

@@ -1,0 +1,12 @@
+# Install Ansible
+sudo apt update
+sudo apt install ansible -y
+ansible --version
+
+# Inventory file created at ~/ansible/hosts.ini
+# Ansible config file created with:
+# inventory = ./hosts.ini
+# host_key_checking = False
+# retry_files_enabled = False
+# SSH key generated and copied to linux1 and linux2
+# WinRM enabled on Windows host (see LAB-Ansible.pdf for config)

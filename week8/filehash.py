@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
+import sqlcipher3
 import hashlib
 import sqlite3
 import sys
 import os
 from datetime import datetime
 
-DB_NAME = "monitor.db"
+DB_NAME = "monitor_encrypted.db"
 TABLE_NAME = "files"
+DB_PASSWORD = "mysecret123"
 
 def setup_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlcipher3.connect(DB_NAME)
     cursor = conn.cursor()
+    cursor.execute(f"PRAGMA key = '{DB_PASSWORD}';")
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
             timestamp TEXT,

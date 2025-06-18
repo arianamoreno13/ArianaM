@@ -3,7 +3,7 @@ import sqlcipher3
 import serverinfo
 
 import sys
-sys.path.append('/git/ArianaM/week3/serverinfo.py')
+
 
 # Constants
 database = 'etest.db'
@@ -12,7 +12,7 @@ table = 'devices'
 
 def main():
     # Get system info from serverinfo.py
-    name = serverinfo.get_name()
+    hostname = serverinfo.get_name()
     os = serverinfo.get_os()
     uptime = serverinfo.get_uptime()
     cpu = serverinfo.get_cpu()
@@ -37,11 +37,11 @@ def main():
     # Insert or replace the device info
     try:
         cursor.execute(f'''
-            INSERT OR REPLACE INTO {table} (name, os, uptime, cpu, memory)
+            INSERT OR REPLACE INTO {table} (hostname, os, uptime, cpu, memory)
             VALUES (?, ?, ?, ?, ?)
-        ''', (name, os, uptime, cpu, memory))
+        ''', (hostname, os, uptime, cpu, memory))
         conn.commit()
-        print(f"Device '{name}' updated successfully.")
+        print(f"Device '{hostname}' updated successfully.")
     except Exception as e:
         print(f"Error: {e}")
     finally:

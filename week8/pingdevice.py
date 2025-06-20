@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-from pinglib import ping
 import sys
-import sqlite3
+import sqlcipher3
+import socket
 from datetime import datetime
+from pinglib import ping
 
 DB_NAME = 'monitor.db'
 TABLE_NAME = 'devices'
+DB_KEY = "mysecret123"
+
+hostname = socket.gethostname()
 
 def main():
     setup_db()
 
     if len(sys.argv) < 2:
         print("Usage: ./pingdevice.py <add|delete|list|check> [options]")
-        sys.exit(1)
+        return
 
-    cmd = sys.argv[1].lower()
+    cmd = sys.argv[1]
 
     if cmd == "add" and len(sys.argv) == 4:
         add_device(sys.argv[2], sys.argv[3])
@@ -28,62 +32,66 @@ def main():
     else:
         print("Invalid command or missing arguments.")
 
-def setup_db():
-    with sqlite3.connect(DB_NAME) as conn:
-        conn.execute(f'''
-            CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
-                dns_ip TEXT PRIMARY KEY,
-                warn_level INTEGER
-            )
-        ''')
+def connect_db():
+    conn = sqlcipher3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute(f"PRAGMA key = '{DB_KEY}';")
+    return conn, cursor
 
-def add_device(dns_ip, warn_level):
-    try:
-        warn_level = int(warn_level)
-        with sqlite3.connect(DB_NAME) as conn:
-            conn.execute(f'INSERT OR REPLACE INTO {TABLE_NAME} (dns_ip, warn_level) VALUES (?, ?)', (dns_ip, warn_level))
-        print(f"Added {dns_ip} with warn level {warn_level}ms.")
-    except ValueError:
-        print("Warning level must be an integer.")
+def setup_table():
+    conn, cursor = connect_db()
+    cursor.execute(f"""
+        CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+            dns_ip TEXT NOT NULL,
+            warn_level INTEGER NOT NULL
+        );
+    """)
+    conn.commit()
+    conn.close()
 
-def delete_device(dns_ip):
-    with sqlite3.connect(DB_NAME) as conn:
-        conn.execute(f'DELETE FROM {TABLE_NAME} WHERE dns_ip = ?', (dns_ip,))
-    print(f"Deleted {dns_ip} if it existed.")
+def add_device(ip, warn_ms):
+    conn, cursor = connect_db()
+    cursor.execute(f"INSERT INTO {TABLE_NAME} (dns_ip, warn_level) VALUES (?, ?);", (ip, int(warn_ms)))
+    conn.commit()
+    conn.close()
+
+def delete_device(ip):
+    conn, cursor = connect_db()
+    cursor.execute(f"DELETE FROM {TABLE_NAME} WHERE dns_ip = ?;", (ip,))
+    conn.commit()
+    conn.close()
 
 def list_devices():
-    with sqlite3.connect(DB_NAME) as conn:
-        cursor = conn.execute(f'SELECT * FROM {TABLE_NAME}')
-        rows = cursor.fetchall()
-        if rows:
-            for dns_ip, warn_level in rows:
-                print(f"{dns_ip} - Warn Level: {warn_level}ms")
-        else:
-            print("No devices found.")
+    conn, cursor = connect_db()
+    cursor.execute(f"SELECT dns_ip, warn_level FROM {TABLE_NAME};")
+    rows = cursor.fetchall()
+    conn.close()
+    for row in rows:
+        print(f"{row[0]} (warn level: {row[1]}ms)")
 
-def log_message(level, message, logfile=None):
+def log_message(message, logfile=None):
     timestamp = datetime.now().isoformat(timespec='seconds')
-    output = f"{timestamp} mido: {level}: {message}"
+    line = f"{timestamp} {hostname}: {message}"
     if logfile:
-        try:
-            with open(logfile, 'a') as f:
-                f.write(output + '\n')
-        except Exception as e:
-            print(f"Failed to write log: {e}")
+        with open(logfile, 'a') as f:
+            f.write(line + "\n")
     else:
-        print(output)
+        print(line)
 
 def check_devices(logfile=None):
-    with sqlite3.connect(DB_NAME) as conn:
-        cursor = conn.execute(f'SELECT * FROM {TABLE_NAME}')
-        for dns_ip, warn_level in cursor.fetchall():
-            result = ping(dns_ip)
-            if result is None:
-                log_message("ERROR", f"Device {dns_ip} is down", logfile)
-            elif result > warn_level:
-                log_message("WARNING", f"Device {dns_ip} ping time is {result}ms, warn level set to {warn_level}ms", logfile)
-            else:
-                log_message("OK", f"Device {dns_ip} ping time is {result}ms", logfile)
+    conn, cursor = connect_db()
+    cursor.execute(f"SELECT dns_ip, warn_level FROM {TABLE_NAME};")
+    devices = cursor.fetchall()
+    conn.close()
+
+    for ip, warn_ms in devices:
+        success, ping_time = ping(ip)
+        if not success:
+            log_message(f"ERROR: Device {ip} is down", logfile)
+        elif ping_time > warn_ms:
+            log_message(f"WARNING: Device {ip} ping time is {ping_time}ms, warn level set to {warn_ms}ms", logfile)
+        else:
+            log_message(f"OK: Device {ip} ping time is {ping_time}ms", logfile)
 
 if __name__ == "__main__":
     main()

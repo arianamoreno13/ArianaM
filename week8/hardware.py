@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-
 import os
 import sys
-import sqlite3
+import sqlcipher3
 from datetime import datetime
 import shutil
 import psutil
@@ -10,13 +9,19 @@ import socket
 
 DB_NAME = "monitor.db"
 TABLE_NAME = "hardware"
+DB_KEY = "mysecret123"
 
 # Get system hostname
 hostname = socket.gethostname()
 
-def get_alert_levels():
-    conn = sqlite3.connect(DB_NAME)
+def connect_db():
+    conn = sqlcipher3.connect(DB_NAME)
     cursor = conn.cursor()
+    cursor.execute(f"PRAGMA key = '{DB_KEY}';")
+    return conn, cursor
+
+def get_alert_levels():
+    conn, cursor = connect_db()
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
             cpuload_alert REAL DEFAULT -1,
@@ -40,8 +45,7 @@ def get_alert_levels():
     return row
 
 def set_alert(cmd, value):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    conn, cursor = connect_db()
     column = {
         "cpu-alert": "cpuload_alert",
         "memory-alert": "memory_alert",

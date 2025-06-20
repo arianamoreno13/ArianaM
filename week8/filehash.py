@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sqlcipher3
 import hashlib
-import sqlite3
 import sys
 import os
 from datetime import datetime

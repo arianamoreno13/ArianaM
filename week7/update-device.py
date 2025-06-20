@@ -2,13 +2,10 @@
 import sqlcipher3
 import serverinfo
 
-import sys
-
-
 # Constants
-database = 'etest.db'
-password = 'mysecret123'
-table = 'devices'
+DB_NAME = 'etest.db'
+DB_KEY = 'mysecret123'
+TABLE_NAME = 'devices'
 
 def main():
     # Get system info from serverinfo.py
@@ -19,14 +16,14 @@ def main():
     memory = serverinfo.get_memory()
 
     # Connect to encrypted database
-    conn = sqlcipher3.connect(database)
+    conn = sqlcipher3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute(f"PRAGMA key='{password}';")
+    cursor.execute(f"PRAGMA key='{DB_KEY}';")
 
-    # Optional: Create table if it doesn't exist
+    # Create table if it doesn't exist
     cursor.execute(f'''
-        CREATE TABLE IF NOT EXISTS {table} (
-            name TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+            hostname TEXT PRIMARY KEY,
             os TEXT,
             uptime TEXT,
             cpu TEXT,
@@ -37,13 +34,13 @@ def main():
     # Insert or replace the device info
     try:
         cursor.execute(f'''
-            INSERT OR REPLACE INTO {table} (hostname, os, uptime, cpu, memory)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT OR REPLACE INTO {TABLE_NAME} (hostname, os, uptime, cpu, memory)
+            VALUES (?, ?, ?, ?, ?);
         ''', (hostname, os, uptime, cpu, memory))
         conn.commit()
-        print(f"Device '{hostname}' updated successfully.")
+        print(f"[+] Device '{hostname}' updated successfully.")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"[!] Error: {e}")
     finally:
         conn.close()
 

@@ -4,11 +4,12 @@ import csv
 import json
 import sqlcipher3
 
-database = 'etest.db'
-table = 'devices'
-password = 'mysecret123'
+# Constants
+DB_NAME = 'etest.db'
+DB_KEY = 'mysecret123'
+TABLE_NAME = 'devices'
 
-# Check Arguments
+# Validate arguments
 if len(sys.argv) < 2 or sys.argv[1] not in ['screen', 'csv', 'json']:
     print("Usage: dump-table.py <screen|csv|json> [outputfile]")
     sys.exit(1)
@@ -16,44 +17,45 @@ if len(sys.argv) < 2 or sys.argv[1] not in ['screen', 'csv', 'json']:
 mode = sys.argv[1]
 output_file = sys.argv[2] if len(sys.argv) == 3 else None
 
-# Connect to Encrypted Database
-conn = sqlcipher3.connect(database)
-cursor = conn.cursor()
-cursor.execute(f"PRAGMA key='{password}';")
-
-# Get Data
+# Connect to encrypted database and fetch data
 try:
-    result = cursor.execute(f"SELECT * FROM {table};")
+    conn = sqlcipher3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute(f"PRAGMA key = '{DB_KEY}';")
+
+    # Fetch data
+    result = cursor.execute(f"SELECT * FROM {TABLE_NAME};")
     rows = result.fetchall()
     headers = [description[0] for description in result.description]
+
+    # Output to screen
+    if mode == 'screen':
+        for row in rows:
+            print(dict(zip(headers, row)))
+
+    # Output to CSV
+    elif mode == 'csv':
+        if not output_file:
+            print("Output file required for CSV mode.")
+            sys.exit(1)
+        with open(output_file, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+            writer.writerows(rows)
+
+    # Output to JSON
+    elif mode == 'json':
+        if not output_file:
+            print("Output file required for JSON mode.")
+            sys.exit(1)
+        with open(output_file, 'w') as f:
+            json_data = [dict(zip(headers, row)) for row in rows]
+            json.dump(json_data, f, indent=2)
+
 except Exception as e:
-    print("Error querying database:", e)
-    conn.close()
+    print(f"[!] Error: {e}")
     sys.exit(1)
 
-# Output to Screen
-if mode == 'screen':
-    for row in rows:
-        print(dict(zip(headers, row)))
+finally:
+    conn.close()
 
-# Output to CSV
-elif mode == 'csv':
-    if not output_file:
-        print("Output file required for CSV mode.")
-        sys.exit(1)
-    with open(output_file, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(headers)
-        writer.writerows(rows)
-
-# Output to JSON
-elif mode == 'json':
-    if not output_file:
-        print("Output file required for JSON mode.")
-        sys.exit(1)
-    with open(output_file, 'w') as f:
-        json_data = [dict(zip(headers, row)) for row in rows]
-        json.dump(json_data, f, indent=2)
-
-# Cleanup
-conn.close()

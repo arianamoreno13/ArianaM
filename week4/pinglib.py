@@ -1,44 +1,39 @@
 #!/usr/bin/env python3
-
-import sys
 import subprocess
-import re
+import socket
+import time
 
 def pingthis(ipordns):
     try:
-        # Run ping command (1 packet, quiet output)
+        # Try resolving to IP
+        try:
+            resolved_ip = socket.gethostbyname(ipordns)
+        except Exception:
+            resolved_ip = "Unknown"
+
+        # Try reverse DNS (if it's an IP)
+        try:
+            resolved_dns = socket.gethostbyaddr(ipordns)[0]
+        except Exception:
+            resolved_dns = "Unknown"
+
+        # Start ping timer
+        start = time.time()
         result = subprocess.run(
             ['ping', '-c', '1', ipordns],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
         )
+        end = time.time()
 
-        # If ping failed (host not found, etc.)
-        if result.returncode != 0:
-            return [ipordns, 'NotFound']
-
-        # Search for the time=XX ms part in the output
-        match = re.search(r'time[=<](\d+\.?\d*)\s*ms', result.stdout)
-        if match:
-            time_ms = round(float(match.group(1)), 2)
-            return [ipordns, str(time_ms)]
+        if result.returncode == 0:
+            ping_time = f"{(end - start):.3f}"
         else:
-            return [ipordns, 'NotFound']
+            ping_time = "Not Found"
+
+        return [ipordns, resolved_dns, resolved_ip, ping_time]
 
     except Exception as e:
-        return [ipordns, 'NotFound']
+        return [ipordns, "Unknown", "Unknown", "Not Found"]
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: pinglib.py <IP | Domainname>")
-        sys.exit(1)
-
-    ipordns = sys.argv[1]
-    result = pingthis(ipordns)
-    print("IP, TimeToPing(ms)")
-    print(f"{result[0]},{result[1]}")
-
-if __name__ == "__main__":
-    main()
 
